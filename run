@@ -1,16 +1,17 @@
 #!/bin/bash
 
 echo "Setting up the project requirements"
-chmod +x bin/setup
-bin/setup
+chmod +x scripts/pre_setup
+scripts/pre_setup
 
 echo "Running the project"
 docker run \
   --rm \
   -it \
+  --name rebase-challenge \
   -w /app \
   -v $(pwd):/app \
   --network=rebase-network \
   -p 3000:3000 \
   ruby \
-  bash -c "chmod +x scripts/install_gems && sh scripts/install_gems && RACK_ENV=development ruby server.rb"
+  bash -c "chmod +x scripts/install_gems && sh scripts/install_gems && RACK_ENV=development bundle exec rackup -s puma -o '0.0.0.0' -p 3000"

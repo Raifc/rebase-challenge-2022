@@ -13,6 +13,8 @@ docker run \
   --network=rebase-network \
   -p 3000:3000 \
   ruby \
-  bash -c "sleep 1d"
+  bash -c "sh scripts/install_gems && RACK_ENV=development bundle exec rake db:reset"
 
-docker exec -it rebase-challenge bash -c "gem install rake pg --no-doc && RACK_ENV=development bundle exec rake db:reset"
+docker container rm -f rebase-challenge
+
+echo "Done"

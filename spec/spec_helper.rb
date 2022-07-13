@@ -3,8 +3,9 @@ if ENV['RACK_ENV'] == 'development'
 
   SimpleCov.start do
     add_group "Config", "config/"
-    track_files "lib/**/*.rb"
+    add_group "Requets", "api/server"
     track_files "config/my_database_connector.rb"
+    track_files "server.rb"
 
     add_filter "bin/"
     add_filter "scripts/"
@@ -15,6 +16,7 @@ if ENV['RACK_ENV'] == 'development'
 end
 
 require File.expand_path('../../config/my_database_connector', __FILE__)
+require_relative '../config/my_database_connector'
 
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

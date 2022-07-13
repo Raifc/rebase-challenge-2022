@@ -1,33 +1,21 @@
 # frozen_string_literal: true
 
+require 'csv'
 require 'sinatra'
 require 'rack/handler/puma'
-require 'csv'
+require_relative './config/my_database_connector'
 
 get '/tests' do
-  ### Example
-  # [
-  #   [cpf, name, date],
-  #   [123, 'Leandro', 2022-01-01'],
-  #   [456, 'Ana', 2022-01-02'],
-  #   [789, 'Maria', 2022-01-03']
-  # ]
-  #
-  rows = CSV.read('./data.csv', col_sep: ';')
+    db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'development'))
+    tests_data = db.select_all(table_name: 'tests')
 
-  ### Example
-  # [cpf, name, date]
-  columns = rows.shift
+    final_data = tests_data.to_a.map do |row|
+      row.delete('id')
 
-  ### Example
-  # From:  [123, 'Leandro', 2022-01-01']
-  # To: { cpf: 123, name: 'Leandro', date: '2022-01-01' }
-  rows.map do |row|
-    row.each_with_object({}).with_index do |(cell, acc), idx|
-      column = columns[idx]
-      acc[column] = cell
+      row
     end
-  end.to_json
+
+    final_data.to_json
 end
 
 Rack::Handler::Puma.run(
