@@ -15,13 +15,25 @@ if ENV['RACK_ENV'] == 'development'
   end
 end
 
-require File.expand_path('../../config/my_database_connector', __FILE__)
+require 'rack/test'
 require_relative '../config/my_database_connector'
+require_relative '../server'
+
+module RSpecMixin
+  include Rack::Test::Methods
+
+  def app
+    builder = Rack::Builder.new
+    builder.run Application.new
+  end
+end
 
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
 
   ENV['RACK_ENV'] = 'test' # force to run on test environment
+
+  config.include RSpecMixin
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
