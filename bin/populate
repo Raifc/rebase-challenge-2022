@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Populating database"
+chmod +x scripts/pre_setup
+scripts/pre_setup
+
+docker run \
+  --rm \
+  -d \
+  --name=rebase-challenge \
+  -w /app \
+  -v $(pwd):/app \
+  --network=rebase-network \
+  -p 3000:3000 \
+  ruby \
+  bash -c "sleep 1d"
+
+docker exec -it rebase-challenge bash -c "gem install rake pg --no-doc && RACK_ENV=development bundle exec rake db:reset"

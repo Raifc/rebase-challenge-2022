@@ -1,0 +1,14 @@
+# config/database.yml
+development:
+  username: postgres
+  port: 5432
+  database: rebase_challenge_development
+  host: "rebase-challenge-db"
+  password: "password"
+
+test:
+  username: postgres
+  port: 5432
+  database: rebase_challenge_test
+  host: "rebase-challenge-db"
+  password: "password"
