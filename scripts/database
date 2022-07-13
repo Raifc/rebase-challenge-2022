@@ -1,0 +1,10 @@
+#!/bin/bash
+
+docker run \
+  --rm \
+  -d \
+  -v ~/rebase-challenge-db:/var/lib/postgresql/data \
+  --network=rebase-network \
+  -e POSTGRES_PASSWORD="password" \
+  --name rebase-challenge-db \
+  postgres:latest

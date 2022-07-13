@@ -1,0 +1,11 @@
+#!/bin/bash
+
+chmod +x bin/populate
+chmod +x scripts/database
+
+echo "Creating docker network"
+docker network create -d bridge rebase-network
+
+echo "Starting Database"
+chmod +x scripts/database
+sh "scripts/database"
