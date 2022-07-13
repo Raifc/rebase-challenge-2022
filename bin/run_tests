@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Setting up the project requirements (just in case)"
+chmod +x bin/setup
+bin/setup
+
+echo "Running the tests"
+docker run \
+  --rm \
+  -w /app \
+  -v $(pwd):/app \
+  --network=rebase-network \
+  -p 3000:3000 \
+  ruby \
+  bash -c "bundle install --without development && bundle exec rspec"

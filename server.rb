@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'rack/handler/puma'
 require 'csv'
@@ -11,7 +13,7 @@ get '/tests' do
   #   [789, 'Maria', 2022-01-03']
   # ]
   #
-  rows = CSV.read("./data.csv", col_sep: ';')
+  rows = CSV.read('./data.csv', col_sep: ';')
 
   ### Example
   # [cpf, name, date]
