@@ -1,8 +1,8 @@
 # Rebase Challenge 2022
 
-#API em Ruby para listagem de exames médicos.
+## API em Ruby para listagem de exames médicos.
 
-##Aplicação feita de acordo com o Desafio Rebase 2022
+### Aplicação feita de acordo com o Desafio Rebase 2022
 Os requisitos do desafio podem ser encontrados em: https://git.campuscode.com.br/core-team/rebase-challenge-2022
 
 ## Tech Stack
