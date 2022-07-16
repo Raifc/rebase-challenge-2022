@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  rebase-challenge-db:
+    container_name: rebase-challenge-db
+    image: postgres:latest
+    volumes:
+      - ~/rebase-challenge-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "password"
+    networks:
+      - rebase-network
+
+  rebase-challenge:
+    container_name: rebase-challenge
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: ruby
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - rebase-challenge-db
+    networks:
+      - rebase-network
+
+networks:
+  rebase-network:
+    driver: bridge
