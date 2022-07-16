@@ -25,7 +25,8 @@ class MyDatabaseConnector
     return false if @connection.nil?
 
     fields_as_string = fields.join(',')
-    query = "CREATE TABLE #{table_name} (#{fields_as_string});"
+
+    query = "CREATE TABLE #{table_name} (#{fields_as_string})"
 
     run_query(query: query)
   end

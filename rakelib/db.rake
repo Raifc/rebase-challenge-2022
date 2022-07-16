@@ -13,8 +13,8 @@ COLUMNS_WITH_DATA_TYPE = ['id serial PRIMARY KEY', 'cpf VARCHAR(255)', 'nome_pac
                           'resultado_tipo_exame VARCHAR(255)'].freeze
 
 COLUMNS_NAMES = %w[cpf nome_paciente email_paciente data_nascimento_paciente endereco_paciente cidade_paciente
-estado_patiente crm_medico crm_medico_estado nome_medico email_medico token_resultado_exame data_exame tipo_exame
-limites_tipo_exame resultado_tipo_exame].freeze
+                   estado_patiente crm_medico crm_medico_estado nome_medico email_medico token_resultado_exame data_exame tipo_exame
+                   limites_tipo_exame resultado_tipo_exame].freeze
 
 namespace :db do
   desc 'Reset the DB (Drop + Create + Populate)'
