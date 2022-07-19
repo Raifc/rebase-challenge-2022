@@ -8,7 +8,6 @@
 
 * [Docker](https://docs.docker.com/)
 * [Ruby](https://www.ruby-lang.org/en/)
-
 ## Requisitos
 - [Docker](https://docs.docker.com/) instalado em seu computador.
 
