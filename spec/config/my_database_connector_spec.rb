@@ -1,7 +1,6 @@
 describe MyDatabaseConnector do
-  subject { MyDatabaseConnector.new(database: 'test') }
+  subject { MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test')) }
 
-  #TODO checar o motivo de o banco de dados estar se sobrescrevendo em ambientes diferentes
   context '#new' do
     it 'should call the connect method' do
       expect_any_instance_of(MyDatabaseConnector).to receive(:connect).once

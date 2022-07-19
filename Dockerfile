@@ -11,8 +11,10 @@ postgresql-client
 
 COPY Gemfile* $APP_DIR
 
-RUN bundle install
+RUN bundle install --without development test
 
 COPY . $APP_DIR
 
-CMD ["bundle", "exec", "rackup", "-s", "puma", "-o", "0.0.0.0", "-p", "3000"]
+EXPOSE 3000
+
+CMD ["sleep", "7d"]

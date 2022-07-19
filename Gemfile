@@ -3,9 +3,11 @@ source 'https://rubygems.org'
 gem 'dotenv'
 gem 'rake'
 gem 'rack'
+gem 'sidekiq'
 gem 'sinatra'
 gem 'pg'
 gem 'puma'
+gem 'i18n'
 
 group :development do
   gem 'guard'
