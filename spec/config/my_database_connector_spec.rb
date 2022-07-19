@@ -1,7 +1,6 @@
 describe MyDatabaseConnector do
-  subject { MyDatabaseConnector.new(database: 'test') }
+  subject { MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test')) }
 
-  #TODO checar o motivo de o banco de dados estar se sobrescrevendo em ambientes diferentes
   context '#new' do
     it 'should call the connect method' do
       expect_any_instance_of(MyDatabaseConnector).to receive(:connect).once
@@ -10,7 +9,31 @@ describe MyDatabaseConnector do
   end
 
   context '#run_query' do
-    # TODO fazer o false
+    it 'should be false as connection fails' do
+      allow(PG).to receive(:connect).and_return(nil)
+      query = 'EXPECTED QUERY'
+
+      result = subject.run_query(query: query)
+
+      expect(result).to eq(false)
+    end
+
+    it 'should be false for select_all as connection fails' do
+      allow(PG).to receive(:connect).and_return(nil)
+
+      result = subject.select_all(table_name: nil)
+
+      expect(result).to eq(false)
+    end
+
+    it 'should be false for reset_table as connection fails' do
+      allow(PG).to receive(:connect).and_return(nil)
+
+      result = subject.reset_table(table_name: nil)
+
+      expect(result).to eq(false)
+    end
+
     it 'should call the expected methods only once' do
       query = 'EXPECTED QUERY'
 
@@ -21,12 +44,19 @@ describe MyDatabaseConnector do
   end
 
   context '#create_table' do
-    # TODO fazer o false
+    it 'should be false as connection fails' do
+      allow(PG).to receive(:connect).and_return(nil)
+
+      result = subject.create_table(table_name: nil, fields: nil)
+
+      expect(result).to eq(false)
+    end
+
     it 'should call #run_query from #create_table' do
       table_name = 'SAMPLE_TABLE'
       column_fields = ['id PRIMARY KEY', 'name TEXT', 'age INTEGER']
       expected_fields = 'id PRIMARY KEY,name TEXT,age INTEGER'
-      query = "CREATE TABLE #{table_name} (#{expected_fields});"
+      query = "CREATE TABLE #{table_name} (#{expected_fields})"
 
       expect(subject).to receive(:run_query).with(query: query).once
 
@@ -35,7 +65,14 @@ describe MyDatabaseConnector do
   end
 
   context '#insert_row_data' do
-    # TODO fazer o false
+    it 'should be false as connection fails' do
+      allow(PG).to receive(:connect).and_return(nil)
+
+      result = subject.insert_row_data(table_name: nil, columns: nil, row_data: nil)
+
+      expect(result).to eq(false)
+    end
+
     it 'should call #run_query from #insert_row_data' do
       table_name = 'SAMPLE_TABLE_2'
       column_fields = %w[C1 C2 C3]
@@ -49,16 +86,22 @@ describe MyDatabaseConnector do
   end
 
   context '#drop_table_if_exists' do
-    # TODO fazer o false
+    it 'should be false as connection fails' do
+      table_name = 'SAMPLE_TABLE_3'
+      allow(PG).to receive(:connect).and_return(nil)
+
+      result = subject.drop_table_if_exists(table_name: table_name)
+
+      expect(result).to eq(false)
+    end
+
     it 'should call #run_query from #drop_table_if_exists' do
       table_name = 'SAMPLE_TABLE_3'
-      column_fields = %w[C1 C2 C3]
-      values = %w[A 9 C]
-      query = "INSERT INTO SAMPLE_TABLE_3 (C1,C2,C3) VALUES ($$A$$,$$9$$,$$C$$)"
+      query = "DROP TABLE IF EXISTS SAMPLE_TABLE_3"
 
       expect(subject).to receive(:run_query).with(query: query).once
 
-      subject.insert_row_data(table_name: table_name, columns: column_fields, row_data: values)
+      subject.drop_table_if_exists(table_name: table_name)
     end
   end
 
