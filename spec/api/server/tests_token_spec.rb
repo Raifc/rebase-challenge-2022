@@ -26,6 +26,7 @@ describe 'Server endpoints', type: :request do
       expect(last_response.headers).to eq(expected_headers)
     end
   end
+
   context "Sending invalid token" do
     it 'should be 500 when token does not exist' do
       token = 'TOKEN'
@@ -50,5 +51,4 @@ describe 'Server endpoints', type: :request do
       expect(last_response.body).to include(expected_response.to_json)
     end
   end
-
 end
