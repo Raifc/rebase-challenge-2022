@@ -6,7 +6,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: ruby
     ports:
       - "3000:3000"
     environment:
@@ -15,9 +14,23 @@ services:
       - .:/opt/app/
     depends_on:
       - rebase-challenge-db
+      - sidekiq
       - redis
     networks:
       - rebase-network
+
+  sidekiq:
+    container_name: sidekiq
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: "sh scripts/start_sidekiq"
+    environment:
+      REDIS_URL: redis://redis:6379
+    networks:
+      - rebase-network
+    depends_on:
+      - redis
 
   redis:
     container_name: redis

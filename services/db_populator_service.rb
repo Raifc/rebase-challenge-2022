@@ -29,17 +29,15 @@ module DbPopulatorService
     [db_columns_with_data_type, db_columns]
   end
 
-  def self.populate_from_file(file_path, db:, file_type: 'csv', drop_table: false, table_name: 'tests')
+  def self.populate_from_file(file_path, db:, file_type: 'csv', table_name: 'tests')
     return false unless file_type == 'csv'
 
     csv_data = CSV.table(file_path, col_sep: ';', header_converters: nil, headers: true)
 
     columns_with_data_type, columns_names = parse_columns_type(csv_data)
 
-    if drop_table
-      db.drop_table_if_exists(table_name: table_name)
-      db.create_table(table_name: table_name, fields: columns_with_data_type)
-    end
+    db.drop_table_if_exists(table_name: table_name)
+    db.create_table(table_name: table_name, fields: columns_with_data_type)
 
     csv_to_iterate = csv_data.drop(1)
 

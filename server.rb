@@ -43,7 +43,7 @@ class Application < Sinatra::Base
     if filename && table_name
       target = File.join('fixtures', filename)
 
-      ImportJob.perform_async(target, true, table_name)
+      ImportJob.perform_async(target, table_name)
       [201, { message: 'File successfully scheduled to be imported' }.to_json]
     else
       [500, { message: 'Filename or table_name are missing' }.to_json]
@@ -64,6 +64,16 @@ class Application < Sinatra::Base
     else
       [201, result.to_json]
     end
+
+  rescue StandardError => e
+    puts e
+    [500, { message: 'Something went wrong' }.to_json]
+  end
+
+  delete '/clean_test_table' do
+    @db.reset_table(table_name: 'tests')
+
+    [200, { message: 'table dropped' }.to_json]
 
   rescue StandardError => e
     puts e
