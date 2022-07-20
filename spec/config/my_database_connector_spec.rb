@@ -1,10 +1,16 @@
 describe MyDatabaseConnector do
-  subject { MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test')) }
+  subject { MyDatabaseConnector.new }
 
   context '#new' do
     it 'should call the connect method' do
       expect_any_instance_of(MyDatabaseConnector).to receive(:connect).once
-      MyDatabaseConnector.new(database: 'test')
+      MyDatabaseConnector.new
+    end
+
+    it 'should not call the connect method with auto-connect false' do
+      expect_any_instance_of(MyDatabaseConnector).not_to receive(:connect)
+
+      MyDatabaseConnector.new(false)
     end
   end
 
@@ -107,12 +113,13 @@ describe MyDatabaseConnector do
 
   context '#connect' do
     it 'should set the connection attribute with a PG::Connection' do
-      db = MyDatabaseConnector.new(database: 'test')
+      db = MyDatabaseConnector.new
 
       result = db.send(:connect)
 
       expect(result).not_to be_nil
       expect(result.class.to_s).to eq('PG::Connection')
     end
-  end
-end
+    end
+
+ end

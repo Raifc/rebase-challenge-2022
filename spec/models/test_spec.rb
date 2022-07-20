@@ -1,7 +1,7 @@
 describe Test do
 
   before(:each) do
-    @db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test'))
+    @db = MyDatabaseConnector.new
     DbService.reset('test_file.csv')
   end
 

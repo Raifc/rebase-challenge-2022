@@ -16,7 +16,16 @@ class Application < Sinatra::Base
 
   before do
     content_type 'application/json'
-    @db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'development'))
+    @db = MyDatabaseConnector.new
+  end
+
+  def response_handler500(err)
+    puts err
+    response = [500, { message: 'Something went wrong' }.to_json]
+
+    response = [500, { message: 'The table doesnt exist, please do a import first' }.to_json] if err&.message&.include?('does not exist')
+
+    response
   end
 
   get '/tests' do
@@ -31,8 +40,7 @@ class Application < Sinatra::Base
     [201, final_data.to_json]
 
   rescue StandardError => e
-    puts e
-    [500, { message: 'Something went wrong' }.to_json]
+    response_handler500(e)
   end
 
   post '/import' do
@@ -66,8 +74,7 @@ class Application < Sinatra::Base
     end
 
   rescue StandardError => e
-    puts e
-    [500, { message: 'Something went wrong' }.to_json]
+    response_handler500(e)
   end
 
   delete '/clean_test_table' do

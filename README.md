@@ -1,5 +1,5 @@
 # Rebase Challenge 2022  
-
+___
 ## API em Ruby para listagem de exames médicos, de acordo com o Desafio Rebase 2022.
 
 - Os requisitos do desafio podem ser encontrados [aqui](https://git.campuscode.com.br/core-team/rebase-challenge-2022).
@@ -10,45 +10,31 @@
 * [Ruby](https://www.ruby-lang.org/en/)
 ## Requisitos
 - [Docker](https://docs.docker.com/) instalado em seu computador.
-
+___
 ## Rodando a aplicação
-#### Navegue pelo terminal até a pasta do projeto, no terminal, execute os seguintes comandos:
+#### Navegue pelo terminal até a pasta do projeto e execute os seguintes comandos:
 ```bash
 $ docker-compose build
 $ docker-compose up
 ```
-#### Em um segundo terminal, execute os seguintes comandos:
-```bash
-$ docker exec -it rebase-challenge bash
-$ RACK_ENV=development bundle exec rackup -s puma -o '0.0.0.0' -p 3000
-```
-
-#### Em um terceiro terminal, execute os seguintes comandos:
-```bash
-$ docker exec -it rebase-challenge bash
-$ scripts/start_sidekiq
-```
-
 #### A aplicação ficará disponível no endereço : ``` localhost:3000 ```
-
+ - Para fornecer as informações ao banco de dados, envie uma requisição ao endpoint /import, conforme o tópico Endpoints - POST /import.
+___
 ## Executando os testes
-#### Após ter executado os passos do tópico Rodando a aplicação, em um novo terminal, execute os seguintes comandos:
+#### Após ter executado os passos do tópico Rodando a aplicação, em um novo terminal ainda na pasta do projeto, execute os seguintes comandos:
 ```bash
 $ docker exec -it rebase-challenge bash
-$ bundle install
+$ bundle install --with development test
 $ rspec
 ```
-
-O volume do banco de dados será mapeado para pasta home do sistema.
-
-Caso durante a execução ocorra algum problema, use o comando abaixo e repita os passos do tópico Rodando a aplicação: 
-
-``` docker container rm -f rebase-challenge-db && docker network prune ```
-
+- O volume do banco de dados será mapeado para pasta home do sistema.
+___
 # Endpoints
-## GET /tests
+# GET /tests
+#### Retorna todos os dados referentes a pacientes, exames e médicos presentes no banco de dados.
 ## Exemplo de resposta
 ___
+### - Requisição bem sucedida (201)
 #### Headers
 
 ```json
@@ -82,8 +68,22 @@ ___
         ...
 ] 
 ```
+### - Banco de dados vazio (500)
+```json
+{
+    "message": "The table doesnt exist, please do a import first" 
+}
+``` 
 
-## POST /import
+### - Erro na requisição (500)
+```json
+{
+    "message": "Something went wrong" 
+}
+``` 
+
+---
+# POST /import
 #### Realiza a importação dos dados do arquivo csv especificado no body da requisição.
 ___
 ### Exemplo de requisição
@@ -98,34 +98,34 @@ ___
 
 ## Exemplo de resposta 
 ___
-### Requisição bem sucedida (201)
+### - Requisição bem sucedida (201)
 
 ```json 
 {
     "message": "Import has been finished"
 }
 ``` 
-### Erro no body da requisição (500)
+### - Erro no body da requisição (500)
 ```json 
 {
     "message": "filename or table_name are missing" 
 }
 ``` 
 
-### Erro na requisição (500)
+### - Erro na requisição (500)
 ```json
 {
     "message": "Something went wrong" 
 }
 ``` 
-
-## GET /tests/:token
-
+___
+# GET /tests/:token
+#### Realiza a busca de Paciente, médico e informações de exames através do token informado.
 ## Exemplo de resposta
 ___
-### Requisição bem sucedida (201)
+### -  Requisição bem sucedida (201)
 
-#### GET /tests/0W9I67
+#### - GET /tests/0W9I67
 ```json 
 {
     "token_resultado_exame": "0W9I67",
@@ -155,61 +155,12 @@ ___
             "limites_tipo_exame": "11-93",
             "resultado_tipo_exame": "18"
         },
-        {
-            "tipo_exame": "hdl",
-            "limites_tipo_exame": "19-75",
-            "resultado_tipo_exame": "74"
-        },
-        {
-            "tipo_exame": "ldl",
-            "limites_tipo_exame": "45-54",
-            "resultado_tipo_exame": "66"
-        },
-        {
-            "tipo_exame": "vldl",
-            "limites_tipo_exame": "48-72",
-            "resultado_tipo_exame": "41"
-        },
-        {
-            "tipo_exame": "glicemia",
-            "limites_tipo_exame": "25-83",
-            "resultado_tipo_exame": "6"
-        },
-        {
-            "tipo_exame": "tgo",
-            "limites_tipo_exame": "50-84",
-            "resultado_tipo_exame": "32"
-        },
-        {
-            "tipo_exame": "tgp",
-            "limites_tipo_exame": "38-63",
-            "resultado_tipo_exame": "16"
-        },
-        {
-            "tipo_exame": "eletrólitos",
-            "limites_tipo_exame": "2-68",
-            "resultado_tipo_exame": "61"
-        },
-        {
-            "tipo_exame": "tsh",
-            "limites_tipo_exame": "25-80",
-            "resultado_tipo_exame": "13"
-        },
-        {
-            "tipo_exame": "t4-livre",
-            "limites_tipo_exame": "34-60",
-            "resultado_tipo_exame": "9"
-        },
-        {
-            "tipo_exame": "ácido úrico",
-            "limites_tipo_exame": "15-61",
-            "resultado_tipo_exame": "78"
-        }
+        ...
     ]
 }
 ```
 
-### Falha na requisição - Token inexistente (500)
+### - Falha na requisição - Token inexistente (500)
 
 ```json
 {
@@ -217,10 +168,31 @@ ___
 }
 ```
 
-### Erro na requisição (500) 
+### - Erro na requisição (500) 
 
 ```json
 {
     "message": "Something went wrong"
+}
+```
+____
+# DELETE /clean_test_table
+#### Remove todas as linhas do banco de dados.
+
+## Exemplo de resposta
+
+### - Requisição bem sucedida (200)
+
+```json
+{
+   "message" : "table dropped" 
+}
+```
+
+### - Erro na requisição (500)
+
+```json
+{
+  "message": "Something went wrong"
 }
 ```

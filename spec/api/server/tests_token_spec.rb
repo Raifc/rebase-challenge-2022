@@ -8,8 +8,8 @@ describe 'Server endpoints', type: :request do
   let(:headers) { { 'CONTENT_TYPE' => 'application/json' } }
 
   context "Sending valid token" do
-    before do
-      @db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test'))
+    before(:each) do
+      @db = MyDatabaseConnector.new
       DbService.reset('test_file.csv')
     end
 
@@ -50,5 +50,6 @@ describe 'Server endpoints', type: :request do
       expect(last_response.status).to eq 500
       expect(last_response.body).to include(expected_response.to_json)
     end
+
   end
 end
