@@ -5,6 +5,7 @@ require 'sinatra'
 require 'rack/handler/puma'
 require_relative './config/my_database_connector'
 require_relative './workers/import_worker'
+require_relative './models/test'
 
 # Server Application
 class Application < Sinatra::Base
@@ -27,7 +28,11 @@ class Application < Sinatra::Base
       row
     end
 
-    final_data.to_json
+    [201, final_data.to_json]
+
+  rescue StandardError => e
+    puts e
+    [500, { message: 'Something went wrong' }.to_json]
   end
 
   post '/import' do
@@ -39,9 +44,25 @@ class Application < Sinatra::Base
       target = File.join('fixtures', filename)
 
       ImportJob.perform_async(target, true, table_name)
-      { message: 'Import has been finished' }.to_json
+      [201, { message: 'File successfully scheduled to be imported' }.to_json]
     else
-      [500, { message: 'filename or table_name are missing' }.to_json]
+      [500, { message: 'Filename or table_name are missing' }.to_json]
+    end
+
+  rescue StandardError => e
+    puts e
+    [500, { message: 'Something went wrong' }.to_json]
+  end
+
+  get '/tests/:token' do
+    token = params[:token]
+    test_model = Test.new(db: @db)
+    result = test_model.build_final_data(token)
+
+    if result.empty?
+      [500, { message: "We could not find any data with token: #{token}" }.to_json]
+    else
+      [201, result.to_json]
     end
 
   rescue StandardError => e
@@ -49,9 +70,3 @@ class Application < Sinatra::Base
     [500, { message: 'Something went wrong' }.to_json]
   end
 end
-
-# Rack::Handler::Puma.run(
-#   Sinatra::Application,
-#   Port: 3000,
-#   Host: '0.0.0.0'
-# )
