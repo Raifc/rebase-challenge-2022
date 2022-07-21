@@ -23,7 +23,7 @@ class Application < Sinatra::Base
     puts err
     response = [500, { message: 'Something went wrong' }.to_json]
 
-    response = [500, { message: 'The table doesnt exist, please do a import first' }.to_json] if err&.message&.include?('does not exist')
+    response = [500, { message: 'The table doesnt exist, please do a import first' }.to_json] if err.message&.include?('does not exist')
 
     response
   end

@@ -1,9 +1,12 @@
+require 'pg'
+
 describe MyDatabaseConnector do
   subject { MyDatabaseConnector.new }
 
   context '#new' do
     it 'should call the connect method' do
       expect_any_instance_of(MyDatabaseConnector).to receive(:connect).once
+
       MyDatabaseConnector.new
     end
 
@@ -113,13 +116,58 @@ describe MyDatabaseConnector do
 
   context '#connect' do
     it 'should set the connection attribute with a PG::Connection' do
-      db = MyDatabaseConnector.new
-
-      result = db.send(:connect)
+      result = subject.send(:connect)
 
       expect(result).not_to be_nil
       expect(result.class.to_s).to eq('PG::Connection')
     end
+
+    it 'should create a new database and connect when there are no databases yet' do
+      db = MyDatabaseConnector.new
+      allow(PG).to receive(:connect).and_raise(PG::ConnectionBad, 'database does not exist')
+      allow(db).to receive(:create_missing_database).and_return(true)
+
+      result = db.send(:connect)
+
+      expect(result).to eq(true)
     end
 
- end
+    it 'should create a new database when connection fails' do
+      allow(PG).to receive(:connect).and_raise(PG::ConnectionBad, 'something went')
+      allow(subject).to receive(:create_missing_database).and_return(true)
+
+      subject.send(:connect)
+    end
+  end
+
+  context '#create_missing_database' do
+    it 'should create a new database when the method is crete_missing_database executed' do
+      expect(subject).to receive(:puts).exactly(1)
+      expect(subject).to receive(:create_database).and_return(true)
+      expect(PG).to receive(:connect).and_return(true)
+
+      result = subject.send(:create_missing_database)
+
+      expect(result).to eq(true)
+    end
+  end
+
+  context '#create_database' do
+    it 'raise' do
+      db = MyDatabaseConnector.new
+      expect(db).to receive(:puts).once
+      expect(PG).to receive(:connect).and_raise(PG::DuplicateDatabase)
+      db.create_database
+    end
+
+    it 'should set the connection attribute with a PG::Connection' do
+      conn_stub = double('PG::Connection')
+      db = MyDatabaseConnector.new
+
+      expect(PG).to receive(:connect).and_return(conn_stub).once
+      expect(conn_stub).to receive(:exec).once
+
+      db.create_database
+    end
+  end
+end
