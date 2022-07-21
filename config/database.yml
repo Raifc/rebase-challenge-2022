@@ -12,3 +12,10 @@ test:
   database: rebase_challenge_test
   host: "rebase-challenge-db"
   password: "password"
+
+production:
+  username: postgres
+  port: 5432
+  database: rebase_challenge_production
+  host: "rebase-challenge-db"
+  password: "password"

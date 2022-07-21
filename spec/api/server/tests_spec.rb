@@ -3,6 +3,7 @@
 require 'rspec'
 require_relative '../../spec_helper'
 require_relative '../../../services/db_service'
+require_relative '../../../server'
 
 describe 'Server endpoints', type: :request do
   let(:headers) { { 'CONTENT_TYPE' => 'application/json' } }
@@ -10,7 +11,7 @@ describe 'Server endpoints', type: :request do
   context "Successfull request" do
     before do
       DbService.reset('test_file.csv')
-      @db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test'))
+      @db = MyDatabaseConnector.new
       @db.reset_table(table_name: 'tests')
 
       column_info = %w[cpf nome_paciente email_paciente data_nascimento_paciente endereco_paciente cidade_paciente estado_patiente crm_medico crm_medico_estado nome_medico email_medico token_resultado_exame data_exame tipo_exame limites_tipo_exame resultado_tipo_exame].freeze
@@ -47,6 +48,15 @@ describe 'Server endpoints', type: :request do
 
         expect(last_response.status).to eq 500
         expect(last_response.body).to include('Something went wrong')
+      end
+
+      it 'should return 500 with Table does not exists' do
+        allow(STDOUT).to receive(:puts)
+        allow_any_instance_of(MyDatabaseConnector).to receive(:select_all).and_raise(StandardError.new("does not exist"))
+
+        get('/tests', nil, headers)
+
+        expect(last_response.body).to include('The table doesnt exist, please do a import first')
       end
     end
   end

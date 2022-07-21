@@ -19,7 +19,6 @@ module DbService
                       limites_tipo_exame resultado_tipo_exame].freeze
 
   def self.reset(filename = 'data.csv')
-    ENV['RACK_ENV'] ||= 'development'
     env = ENV.fetch('RACK_ENV')
     table_name = 'tests'
 
@@ -28,7 +27,7 @@ module DbService
     csv_data_only = CSV.read(target, col_sep: ';', header_converters: nil, headers: true).drop(1)
 
     if @allowed_envs.include?(env)
-      db = MyDatabaseConnector.new(database: env)
+      db = MyDatabaseConnector.new
       db.drop_table_if_exists(table_name: table_name)
       db.create_table(table_name: table_name, fields: @columns_with_data_type)
 
@@ -38,6 +37,18 @@ module DbService
 
     else
       puts 'Check your environment settings'
+    end
+  end
+
+  def self.create_databases
+    envs = %w[production development test]
+
+    envs.each do |current_env|
+      ENV['RACK_ENV'] = current_env
+
+      puts "Creating #{current_env} database"
+      current_db_connection = MyDatabaseConnector.new(false)
+      current_db_connection.create_database
     end
   end
 end

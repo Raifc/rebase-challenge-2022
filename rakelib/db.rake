@@ -10,4 +10,11 @@ namespace :db do
     DbService.reset('data.csv')
     puts '=== Done ==='
   end
+
+  desc 'Create Databases for the environments'
+  task :create do
+    puts '=== Creating Databases ==='
+    DbService.create_databases
+    puts '=== Done ==='
+  end
 end

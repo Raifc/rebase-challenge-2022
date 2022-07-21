@@ -3,16 +3,16 @@ require 'pg'
 
 # Database Connector
 class MyDatabaseConnector
-  def initialize(database:)
+  def initialize(auto_connect = true)
     db_config = YAML.load_file('config/database.yml')[ENV.fetch('RACK_ENV')]
 
     @user = db_config['username']
     @password = db_config['password']
     @port = db_config['port']
     @host = db_config['host']
-    @database = "rebase_challenge_#{database}"
+    @database = db_config['database']
     @connection = nil
-    connect
+    connect if auto_connect
   end
 
   def run_query(query:)
@@ -61,9 +61,26 @@ class MyDatabaseConnector
     run_query(query: "TRUNCATE ONLY #{table_name} RESTART IDENTITY;")
   end
 
+  def create_database
+    conn = PG.connect(user: 'postgres', password: 'password', port: '5432', host: 'rebase-challenge-db')
+    conn.exec("CREATE DATABASE #{@database}")
+  rescue PG::DuplicateDatabase
+    puts "The Database #{@database} already exists."
+  end
+
   private
 
   def connect
-    @connection = PG.connect(user: @user, password: @password, port: @port, host: @host)
+    @connection = PG.connect(user: @user, password: @password, port: @port, host: @host, dbname: @database)
+  rescue PG::ConnectionBad => e
+    if e.message.include?('does not exist')
+      create_missing_database
+    end
+  end
+
+  def create_missing_database
+    puts "The Database #{@database} doesnt exists, creating database..."
+    create_database
+    @connection = PG.connect(user: @user, password: @password, port: @port, host: @host, dbname: @database)
   end
 end

@@ -9,7 +9,7 @@ describe 'POST /import' do
 
   context "Imports Data" do
     before :each do
-      @db = MyDatabaseConnector.new(database: ENV.fetch('RACK_ENV', 'test'))
+      @db = MyDatabaseConnector.new
       @db.drop_table_if_exists(table_name: 'tests')
       DbService.reset('test_file.csv')
     end

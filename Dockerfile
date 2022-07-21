@@ -17,4 +17,4 @@ COPY . $APP_DIR
 
 EXPOSE 3000
 
-CMD ["sleep", "7d"]
+CMD ["sh", "scripts/app_start"]
