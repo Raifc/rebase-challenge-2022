@@ -3,7 +3,7 @@ ___
 ## API em Ruby para listagem de exames médicos, de acordo com o Desafio Rebase 2022.
 
 - Os requisitos do desafio podem ser encontrados [aqui](https://git.campuscode.com.br/core-team/rebase-challenge-2022).
-
+- Deploy da aplicação feito na AWS, acesse [aqui](http://3.87.194.37:3000/tests).
 ## Tech Stack
 
 * [Docker](https://docs.docker.com/)
