@@ -8,6 +8,8 @@ ___
 
 * [Docker](https://docs.docker.com/)
 * [Ruby](https://www.ruby-lang.org/en/)
+* [Redis](https://redis.io/)
+* [PostgreSQL](https://www.postgresql.org/)
 ## Requisitos
 - [Docker](https://docs.docker.com/) instalado em seu computador.
 ___
