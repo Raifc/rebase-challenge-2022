@@ -73,10 +73,14 @@ class MyDatabaseConnector
   def connect
     @connection = PG.connect(user: @user, password: @password, port: @port, host: @host, dbname: @database)
   rescue PG::ConnectionBad => e
-    if e.message&.include?('does not exist')
-      puts "The Database #{@database} doesnt exists, creating database..."
-      create_database
-      @connection = PG.connect(user: @user, password: @password, port: @port, host: @host, dbname: @database)
+    if e.message.include?('does not exist')
+      create_missing_database
     end
+  end
+
+  def create_missing_database
+    puts "The Database #{@database} doesnt exists, creating database..."
+    create_database
+    @connection = PG.connect(user: @user, password: @password, port: @port, host: @host, dbname: @database)
   end
 end
