@@ -28,21 +28,6 @@ class Application < Sinatra::Base
     response
   end
 
-  get '/tests' do
-    tests_data = @db.select_all(table_name: 'tests')
-
-    final_data = tests_data.to_a.map do |row|
-      row.delete('id')
-
-      row
-    end
-
-    [201, final_data.to_json]
-
-  rescue StandardError => e
-    response_handler500(e)
-  end
-
   post '/import' do
     payload = JSON.parse(request.body.read)
     filename = payload.fetch('filename', false)
@@ -60,6 +45,21 @@ class Application < Sinatra::Base
   rescue StandardError => e
     puts e
     [500, { message: 'Something went wrong' }.to_json]
+  end
+
+  get '/tests' do
+    tests_data = @db.select_all(table_name: 'tests')
+
+    final_data = tests_data.to_a.map do |row|
+      row.delete('id')
+
+      row
+    end
+
+    [201, final_data.to_json]
+
+  rescue StandardError => e
+    response_handler500(e)
   end
 
   get '/tests/:token' do
